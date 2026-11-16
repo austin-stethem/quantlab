@@ -41,6 +41,41 @@ for w in ("synthA", "synthB", "real"):
              "checks": r["gate"]["checks"], "verdict": r["gate"]["verdict"]}
 data["v3"] = v3
 
+# console upgrade: investor view, pricing pilot, economics, live track record, provenance
+def _load(rel):
+    f = HERE / "results" / rel
+    return json.loads(f.read_text()) if f.exists() else None
+
+data["investor"] = _load("investor.json")
+data["pilot"] = _load("pilot/report.json")
+data["pilot_grid"] = _load("pilot/grid.json")
+data["economics"] = _load("economics.json")
+track = _load("track/track.json")
+if track:
+    track.pop("series", None)
+data["track"] = track
+
+import os
+import subprocess
+from datetime import datetime
+from zoneinfo import ZoneInfo
+
+sha = os.environ.get("GITHUB_SHA", "")
+if not sha:
+    try:
+        sha = subprocess.run(["git", "rev-parse", "HEAD"], cwd=HERE, capture_output=True, text=True).stdout.strip()
+    except OSError:
+        sha = ""
+etfs = [t for t in data["universe"] if t.startswith("XL") or t in ("SPY", "QQQ", "IWM")]
+data["prov"] = {
+    "source": "Yahoo Finance daily closes (yfinance)",
+    "built": datetime.now(ZoneInfo("America/Chicago")).strftime("%Y-%m-%d %H:%M ") + "Central",
+    "commit": sha[:7] or "local",
+    "repo": "https://github.com/austin-stethem/quantlab",
+    "survivorship": f"{len(etfs)} index and sector funds plus {len(data['universe']) - len(etfs)} large caps picked today, "
+                    "so the single stocks are known survivors and the backtest flatters them",
+}
+
 import sys
 tpl_name = sys.argv[1] if len(sys.argv) > 1 else "console_reactor_template.html"
 tpl = (HERE / tpl_name).read_text()

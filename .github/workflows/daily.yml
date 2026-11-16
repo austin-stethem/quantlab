@@ -6,7 +6,7 @@ on:
     branches: [main]
   workflow_dispatch:
 permissions:
-  contents: read
+  contents: write   # the scheduled run commits the live paper-trading log back to results/track/
   pages: write
   id-token: write
 concurrency:
@@ -26,9 +26,22 @@ jobs:
         run: python -m pytest -q tests
       - name: Official run on the latest close
         run: python run.py --refresh
+      - name: Investor view and CSV exports (measures the run; changes nothing in it)
+        run: python tools/build_investor.py
+      - name: Live paper-trading log (scheduled runs only, after the close)
+        if: github.event_name == 'schedule'
+        run: |
+          python tools/track.py
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add results/track
+          if ! git diff --cached --quiet; then
+            git commit -m "Paper-trading log: $(python -c 'import json;print(json.load(open("results/latest.json"))["asof"])')"
+            git pull --rebase origin main && git push origin HEAD:main
+          fi
       - name: Build the console
         run: python build_console.py
-      - run: mkdir -p site && cp results/console.html site/index.html
+      - run: mkdir -p site/data && cp results/console.html site/index.html && cp results/data/*.csv site/data/
       - uses: actions/upload-pages-artifact@v3
         with:
           path: site

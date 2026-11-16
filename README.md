@@ -143,6 +143,10 @@ python run_v3.py --world synthB    # round 2 bench: planted edge      (gate shou
 python pilot/pilot.py              # the price-pilot worked example
 python tools/freeze_results.py     # freeze round 1 numbers and the economics
 python tools/make_readme.py        # write this README from the result files
+python tools/pilot_grid.py         # pilot sizing grid for the console calculator
+python tools/build_investor.py     # investor view of the round 1 paper book, plus CSV exports
+python tools/track.py              # append today's signals to the live paper-trading log
+python build_console.py            # bake every result file into the console
 ```
 
 Every number in this README is generated from the result files by [`tools/make_readme.py`](tools/make_readme.py).
