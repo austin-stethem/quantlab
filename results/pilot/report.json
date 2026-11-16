@@ -1,0 +1,57 @@
+{
+ "network": {
+  "locations": 120,
+  "regions": 6,
+  "pilot_locations": 20,
+  "pilot_weeks": 12,
+  "price_increase": 0.03,
+  "hurdle": 0.02,
+  "launch_week": "2026-08-23",
+  "readout_week": "2026-11-08",
+  "annual_revenue": 296970587.9006822,
+  "true_revenue_effect": 0.0,
+  "true_elasticity": -1.0,
+  "placebo_launches": 17
+ },
+ "example": {
+  "quick": 0.030865831557838945,
+  "pilot_comp": 0.06348904228767338,
+  "rest_comp": 0.032623210729834436,
+  "holdout": 0.00022914827160287754,
+  "range90": [
+   -0.047070574011219994,
+   0.04752887055442575
+  ],
+  "ticket": 0.03678873643140086,
+  "visits": -0.03447460746213784,
+  "placebo_launches": 17,
+  "quick_placebo_clears_hurdle": 1.0,
+  "quick_placebo_mean": 0.11861499587960356,
+  "holdout_placebo_sd": 0.028753630567065574,
+  "holdout_placebo_beats_observed": 1.0,
+  "mde_80": 0.08051016558778361,
+  "quick_rolls_out": true,
+  "disciplined_rolls_out": false
+ },
+ "cost_of_wrong_call": {
+  "promised_annual": 9166244.143774861,
+  "true_annual": 0.0,
+  "plan_miss_annual": 9166244.143774861
+ },
+ "power": {
+  "as_run_mde": 0.08051016558778361,
+  "randomized_40_mde": 0.04317240067429518,
+  "randomized_60_mde": 0.03542337168873687
+ },
+ "repeated_no_effect": {
+  "networks": 500,
+  "quick_rolls_out": 0.944,
+  "disciplined_rolls_out": 0.002
+ },
+ "repeated_real_effect": {
+  "networks": 300,
+  "true_revenue_effect": 0.02392885001209244,
+  "quick_rolls_out": 0.9966666666666667,
+  "disciplined_rolls_out": 0.0
+ }
+}

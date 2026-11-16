@@ -1,0 +1,8 @@
+__pycache__/
+cache/
+results/latest.json
+results/console.html
+results/*.log
+qlraw/
+.env
+site/

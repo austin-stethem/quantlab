@@ -1,0 +1,43 @@
+name: daily-run
+on:
+  schedule:
+    - cron: "30 22 * * 1-5"   # 22:30 UTC: 4:30 PM Central in winter, 5:30 PM in summer. After the close.
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: true
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Tests (no look-ahead, holdout invisible, planted signal recovered)
+        run: python -m pytest -q tests
+      - name: Official run on the latest close
+        run: python run.py --refresh
+      - name: Build the console
+        run: python build_console.py
+      - run: mkdir -p site && cp results/console.html site/index.html
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

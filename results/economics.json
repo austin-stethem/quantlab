@@ -1,0 +1,42 @@
+{
+ "sensitivity": [
+  {
+   "short_term_rate": 0.22,
+   "hurdle": 0.0069275215262199555
+  },
+  {
+   "short_term_rate": 0.3,
+   "hurdle": 0.016862095414930812
+  },
+  {
+   "short_term_rate": 0.37,
+   "hurdle": 0.02762455046103423
+  }
+ ],
+ "inputs": {
+  "short_term_rate": 0.3,
+  "long_term_rate": 0.2,
+  "market": 0.08,
+  "years": 10,
+  "round_trip_cost": 0.002,
+  "hold_months": 2.86
+ },
+ "cost_drag_annual": 0.008391608391608392,
+ "tax_hurdle_annual": 0.016862095414930812,
+ "eras": {
+  "2005-2024": {
+   "ls_monthly": 0.0061,
+   "long_gross_annual": 0.0366,
+   "long_net_annual": 0.028208391608391607,
+   "taxable_vs_spy_per_dollar_yr": 0.014823648312872573,
+   "taxfree_vs_spy_per_dollar_yr": 0.06349974319119647
+  },
+  "since 2015": {
+   "ls_monthly": 0.0036,
+   "long_gross_annual": 0.0216,
+   "long_net_annual": 0.01320839160839161,
+   "taxable_vs_spy_per_dollar_yr": -0.004566432293051315,
+   "taxfree_vs_spy_per_dollar_yr": 0.0279051796103325
+  }
+ }
+}
