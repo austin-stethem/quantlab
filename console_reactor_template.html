@@ -63,7 +63,7 @@
 #c2 .orbit{fill:none;stroke:var(--cyan);stroke-width:1.1;opacity:.4}
 #c2 .rim{fill:none;stroke:var(--cyan);stroke-width:1.5;opacity:.7}
 #c2 .blob{fill:var(--magenta);opacity:.42}
-.core2d .hud .key{left:12px;top:10px;transform:none}
+.keyline{font:600 10px var(--mono);letter-spacing:.08em;color:var(--mute);margin:0 0 10px}
 #c2 .pulse{fill:none;stroke:var(--cyan);stroke-width:1.5}
 #c2 .lbl{font:700 13px var(--hud);letter-spacing:.14em;fill:var(--ink);text-transform:uppercase}
 #c2 .val{font:600 13px var(--mono)}
@@ -319,10 +319,10 @@ button:focus-visible{outline:2px solid var(--magenta);outline-offset:2px}
             <div class="hud">
               <div class="corner tr">FIRE LINE <b id="thr2">0.60</b><br>QUORUM <b id="quo2">4/6</b><br>HORIZON <b id="hz2">20D</b></div>
               <div class="ctr"><div class="tk" id="c-tk">--</div><div class="p" id="c-p">--</div><div class="s" id="c-s">--</div><div class="call" id="c-call">--</div></div>
-              <div class="corner key"><span style="color:var(--fire)">● FIRING</span> <span style="color:var(--cyan)">● ≥ 50%</span> <span style="color:var(--low)">● &lt; 50%</span></div>
             </div>
           </div>
           <div>
+            <div class="keyline"><span style="color:var(--fire)">● FIRING</span> <span style="color:var(--cyan)">● ≥ 50%</span> <span style="color:var(--low)">● &lt; 50%</span></div>
             <div class="readout" id="readout"></div>
             <p class="note">Six scorers read the name; the amber tick is the 0.55 line a scorer must clear to count. The number is the calibrated probability the name is higher in <b id="hz">20</b> trading days. Fires at <b id="thr">0.60</b> with <b id="quo">4</b> of 6.</p>
           </div>
@@ -703,8 +703,8 @@ const core2d = (function(){
     <clipPath id="orbclip"><circle r="74"/></clipPath>
     <filter id="goo"><feGaussianBlur in="SourceGraphic" stdDeviation="7" result="b"/><feColorMatrix in="b" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 20 -8"/></filter>
     <filter id="soft" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>`;
-  const RX = 198, TILT0 = 0.30;
-  const back = el("g", {transform:"rotate(-9)"});
+  const RX = 186, TILT0 = Math.PI/2;   // a full circle around the outside
+  const back = el("g", {});
   const orbitE = el("ellipse", {class:"orbit", rx:RX, ry:RX*Math.sin(TILT0)}, back);
   const ticks = el("g", {class:"glow"});
   for(let k=0;k<72;k++){ const a=k/72*2*Math.PI, r2=k%6?153:160; el("line",{class:"tick",x1:146*Math.cos(a),y1:146*Math.sin(a),x2:r2*Math.cos(a),y2:r2*Math.sin(a)},ticks); }
@@ -721,15 +721,16 @@ const core2d = (function(){
   el("line", {class:"fl", x1:90*Math.cos(fa), y1:90*Math.sin(fa), x2:112*Math.cos(fa), y2:112*Math.sin(fa)});
   el("text", {class:"fltx", x:124*Math.cos(fa), y:124*Math.sin(fa)+4, "text-anchor":"middle"}).textContent = D.threshold.toFixed(2);
   const pulse = el("circle", {class:"pulse", r:80, opacity:0});
-  const front = el("g", {transform:"rotate(-9)"});
+  const front = el("g", {});
   const nodes = NAMES.map((n,i)=>{ const g = el("g", {}, back); const c = el("circle", {r:8, class:"glow"}, g);
     const t = el("text", {class:"lbl", y:4}, g); const nm = document.createElementNS(NS,"tspan"); nm.textContent = n; t.appendChild(nm);
     const v = document.createElementNS(NS,"tspan"); v.setAttribute("class","val"); v.setAttribute("dx","8"); t.appendChild(v);
     return {g, c, t, v, i, size:.5}; });
   let phase = 0, vphase = 0, tilt = TILT0, drag = null, pulseT = 1, last = 0;
-  svg.addEventListener("pointerdown", e=>{ drag={x:e.clientX, y:e.clientY}; vphase=0; try{svg.setPointerCapture(e.pointerId);}catch(_){} svg.classList.add("dragging"); });
-  svg.addEventListener("pointermove", e=>{ if(!drag) return; const dx=e.clientX-drag.x, dy=e.clientY-drag.y; drag={x:e.clientX, y:e.clientY};
-    vphase = dx*0.011; phase += vphase; tilt = Math.max(0.06, Math.min(1.25, tilt + dy*0.006)); });
+  const angleAt = e => { const r = svg.getBoundingClientRect(); return Math.atan2(e.clientY - (r.top + r.height/2), e.clientX - (r.left + r.width/2)); };
+  svg.addEventListener("pointerdown", e=>{ drag={a:angleAt(e)}; vphase=0; try{svg.setPointerCapture(e.pointerId);}catch(_){} svg.classList.add("dragging"); });
+  svg.addEventListener("pointermove", e=>{ if(!drag) return; const a = angleAt(e); let d = a - drag.a;
+    if(d > Math.PI) d -= 2*Math.PI; if(d < -Math.PI) d += 2*Math.PI; drag.a = a; vphase = d; phase += d; });   // turn it like a dial
   const end = ()=>{ drag=null; svg.classList.remove("dragging"); };
   svg.addEventListener("pointerup", end); svg.addEventListener("pointercancel", end);
   function frame(ts){
@@ -737,13 +738,12 @@ const core2d = (function(){
     if(!drag){ phase += vphase; vphase *= 0.95; if(Math.abs(vphase) < 0.001) phase += dt*0.16*sp; tilt += (TILT0 - tilt)*0.004; }
     const ry = RX*Math.sin(tilt); orbitE.setAttribute("ry", ry.toFixed(1));
     for(const n of nodes){
-      const a = phase + n.i*Math.PI/3, x = RX*Math.cos(a), y = ry*Math.sin(a), z = Math.sin(a), k = (z+1)/2;
+      const a = phase + n.i*Math.PI/3, x = RX*Math.cos(a), y = ry*Math.sin(a), k = 1;
       n.g.setAttribute("transform", `translate(${x.toFixed(1)},${y.toFixed(1)})`);
       n.c.setAttribute("r", ((5 + n.size*9)*(.65 + .55*k)).toFixed(1));
       n.g.style.opacity = (.35 + .65*k).toFixed(2);
-      const want = z > 0 ? front : back; if(n.g.parentNode !== want) want.appendChild(n.g);
+      if(n.g.parentNode !== front) front.appendChild(n.g);
       const right = x >= 0; n.t.setAttribute("x", right ? 16 : -16); n.t.setAttribute("text-anchor", right ? "start" : "end");
-      n.t.setAttribute("transform", "rotate(9)");
     }
     ticks.setAttribute("transform", `rotate(${(phase*17).toFixed(2)})`);
     ring2.setAttribute("transform", `rotate(${(-phase*11).toFixed(2)})`);
