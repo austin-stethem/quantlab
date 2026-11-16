@@ -43,6 +43,36 @@
 [data-skin="plain"] .tape{background:var(--glass);border-top:1px solid var(--edge)}
 [data-skin="plain"] .stat .v.big{color:var(--ink)}
 [data-skin="plain"] .v3 .banner{border-color:var(--edge)}
+
+/* ---------- 2D ring core ---------- */
+.stage3d.core2d{aspect-ratio:680/430;min-height:280px;container-type:inline-size}
+[data-skin="plain"] .stage3d.core2d{aspect-ratio:680/430;min-height:280px}
+.core2d svg{position:absolute;inset:0;width:100%;height:100%;touch-action:pan-y;cursor:grab;overflow:visible}
+.core2d svg.dragging{cursor:grabbing}
+.core2d .hud .ctr{left:50%;top:50%;bottom:auto;transform:translate(-50%,-50%);flex-direction:column;gap:0;background:none!important;border:0;padding:0;backdrop-filter:none;-webkit-backdrop-filter:none;white-space:nowrap}
+.core2d .hud .tk{font-size:clamp(11px,2.6cqw,17px);letter-spacing:.3em}
+.core2d .hud .p{font-size:clamp(22px,6.6cqw,44px)}
+.core2d .hud .s{font-size:clamp(8px,1.7cqw,11px)}
+.core2d .hud .call{font-size:clamp(8px,1.7cqw,11px);padding:2px 9px;margin-top:3px}
+#c2 .trk{fill:none;stroke:var(--grid);stroke-width:7}
+#c2 .arc{fill:none;stroke-width:7;stroke-linecap:round;transition:stroke-dasharray .9s cubic-bezier(.2,.8,.2,1),stroke .4s}
+#c2 .fl{stroke:var(--amber);stroke-width:2.5}
+#c2 .fltx{font:700 10px var(--mono);fill:var(--amber)}
+#c2 .tick{stroke:var(--magenta);stroke-width:1.3;opacity:.75}
+#c2 .ring2{fill:none;stroke:var(--violet);stroke-width:1.2;stroke-dasharray:2 7;opacity:.9}
+#c2 .orbit{fill:none;stroke:var(--cyan);stroke-width:1.1;opacity:.4}
+#c2 .rim{fill:none;stroke:var(--cyan);stroke-width:1.5;opacity:.7}
+#c2 .blob{fill:var(--magenta);opacity:.42}
+.core2d .hud .key{left:12px;top:10px;transform:none}
+#c2 .pulse{fill:none;stroke:var(--cyan);stroke-width:1.5}
+#c2 .lbl{font:700 13px var(--hud);letter-spacing:.14em;fill:var(--ink);text-transform:uppercase}
+#c2 .val{font:600 13px var(--mono)}
+#c2 .ulbl{font:700 12px var(--hud);letter-spacing:.12em;fill:var(--ink)}
+#c2 .lead{stroke-width:1;opacity:.7}
+#c2 .glow{filter:url(#soft)}
+[data-skin="plain"] #c2 .glow{filter:none}
+[data-skin="plain"] #c2 .blob{opacity:.16}
+[data-skin="plain"] #c2 .tick{opacity:.45}
 *{box-sizing:border-box}
 html,body{background:var(--bg)}
 body{margin:0;color:var(--ink);font:13px/1.45 var(--mono);overflow-x:hidden}
@@ -117,6 +147,21 @@ button:focus-visible{outline:2px solid var(--magenta);outline-offset:2px}
 .q .ch{font:11px var(--mono);font-variant-numeric:tabular-nums}
 .q svg{width:62px;height:16px;display:block;overflow:visible}
 .q.flash-up{background:rgba(57,255,136,.12)} .q.flash-dn{background:rgba(255,56,96,.12)}
+.q{cursor:pointer}
+.q:focus-visible{outline:2px solid var(--fire);outline-offset:1px}
+.q.pin{border-color:var(--fire)!important;box-shadow:0 0 14px -2px var(--fire)}
+.qd{border:1px solid var(--edge);border-radius:8px;padding:9px 11px;margin-bottom:8px;background:rgba(6,8,7,.55)}
+.qd-h{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.qd-h b{font:800 16px var(--disp);letter-spacing:.14em}
+.qd-h span{font:600 13px var(--mono);font-variant-numeric:tabular-nums}
+.qd-h button{margin-left:auto;padding:3px 9px}
+.qd-g{display:grid;grid-template-columns:1fr 1fr;gap:3px 12px;margin-top:6px;font:11px var(--mono);color:var(--dim)}
+.qd-g b{color:var(--ink);font-weight:600}
+.qd-g b.up{color:var(--lime)} .qd-g b.dn{color:var(--red)}
+.qd-s svg{width:100%;height:54px;display:block;margin-top:6px}
+.qd-s small{display:flex;justify-content:space-between;font:10px var(--mono);color:var(--mute)}
+[data-skin="plain"] .qd{background:var(--bg)}
+[data-skin="plain"] .q.pin{box-shadow:none}
 .q .ld{position:absolute;left:0;right:0;bottom:0;height:2px;background:linear-gradient(90deg,var(--magenta),var(--cyan));transform-origin:left;transform:scaleX(0);transition:transform .35s}
 .up{color:var(--lime)} .dn{color:var(--red)} .flat{color:var(--dim)}
 
@@ -260,6 +305,7 @@ button:focus-visible{outline:2px solid var(--magenta);outline-offset:2px}
       </section>
       <section class="panel">
         <div class="ph"><h2>Data link</h2><span>22 feeds</span></div>
+        <div class="qd" id="qd" hidden></div>
         <div class="dl" id="dl"></div>
       </section>
     </div>
@@ -268,14 +314,12 @@ button:focus-visible{outline:2px solid var(--magenta);outline-offset:2px}
       <section class="panel">
         <div class="ph"><h2>Consensus core</h2><span id="scanlbl">scanning</span></div>
         <div class="core">
-          <div class="stage3d" id="s3d">
+          <div class="stage3d core2d" id="s3d">
+            <svg id="c2" viewBox="-340 -215 680 430" role="img" aria-label="Consensus core: the probability ring and the six scorers on their orbit"></svg>
             <div class="hud">
-              <div class="corner tl">ORBIT <b>22 NODES</b><br>SATELLITES <b>6 SCORERS</b><br>NODE SIZE <b>P(UP)</b></div>
               <div class="corner tr">FIRE LINE <b id="thr2">0.60</b><br>QUORUM <b id="quo2">4/6</b><br>HORIZON <b id="hz2">20D</b></div>
-                                          <div class="ctr"><div class="tk" id="c-tk">--</div><div class="p" id="c-p">--</div><div><div class="s" id="c-s">--</div><div class="call" id="c-call">--</div></div></div>
+              <div class="ctr"><div class="tk" id="c-tk">--</div><div class="p" id="c-p">--</div><div class="s" id="c-s">--</div><div class="call" id="c-call">--</div></div>
               <div class="corner key"><span style="color:var(--fire)">● FIRING</span> <span style="color:var(--cyan)">● ≥ 50%</span> <span style="color:var(--low)">● &lt; 50%</span></div>
-              <div id="satlbls"></div>
-              <div class="tag3d" id="tag3d">--</div>
             </div>
           </div>
           <div>
@@ -353,7 +397,6 @@ button:focus-visible{outline:2px solid var(--magenta);outline-offset:2px}
 <div class="tape"><div class="track" id="tape"></div></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 const D = /*__DATA__*/null;
 const RM = matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -368,6 +411,7 @@ const pct = (x,d=1) => x==null ? "n/a" : (x*100).toFixed(d)+"%";
 const sgn = (x,d=2) => (x>=0?"+":"")+(x*100).toFixed(d)+"%";
 const NAMES = D.scorers, TODAY = D.today, TK = D.universe;
 const byT = Object.fromEntries(TODAY.map(t=>[t.ticker,t]));
+let pinned=null;
 const ctNow = () => new Date(new Date().toLocaleString("en-US",{timeZone:"America/Chicago"}));
 const hms = s => {s=Math.max(0,Math.floor(s));const h=Math.floor(s/3600),m=Math.floor(s%3600/60),x=s%60;return [h,m,x].map(v=>String(v).padStart(2,"0")).join(":");};
 const lerp=(a,b,t)=>a+(b-a)*t;
@@ -434,7 +478,7 @@ function spark(arr){
 }
 function drawDL(){
   $("dl").innerHTML=TK.map(t=>{const q=Q[t], ch=q.px/q.base-1;
-    return `<div class="q" id="q-${t}"><div class="r1"><span class="tk">${t}</span><span class="px">${q.px.toFixed(2)}</span></div><div class="r2"><span class="ch ${ch>0?"up":ch<0?"dn":"flat"}">${sgn(ch)}</span>${spark(q.hist)}</div><i class="ld"></i></div>`;}).join("");
+    return `<div class="q" id="q-${t}" tabindex="0" role="button" aria-label="Show how ${t} is doing"><div class="r1"><span class="tk">${t}</span><span class="px">${q.px.toFixed(2)}</span></div><div class="r2"><span class="ch ${ch>0?"up":ch<0?"dn":"flat"}">${sgn(ch)}</span>${spark(q.hist)}</div><i class="ld"></i></div>`;}).join("");
 }
 function gauss(){let u=0,v=0;while(!u)u=Math.random();while(!v)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
 let tickMs=10000, nextTick=Date.now()+tickMs, ticks=0;
@@ -589,15 +633,22 @@ function initThree(){
   function resize(){const w=host.clientWidth,h=host.clientHeight; renderer.setSize(w,h,false); cam.aspect=w/h; cam.updateProjectionMatrix();}
   resize(); new ResizeObserver(resize).observe(host);
 
-  let current=null, mx=0, my=0;
-  host.addEventListener("pointermove",e=>{const r=host.getBoundingClientRect(); mx=(e.clientX-r.left)/r.width-.5; my=(e.clientY-r.top)/r.height-.5;});
-  host.addEventListener("pointerleave",()=>{mx=my=0;});
+  let current=null, mx=0, my=0, drag=null, vy=0, tilt=0;
+  host.style.cursor="grab"; host.style.touchAction="pan-y";          // sideways drags spin; vertical swipes still scroll the page
+  host.addEventListener("pointerdown",e=>{ drag={x:e.clientX,y:e.clientY}; vy=0; try{host.setPointerCapture(e.pointerId);}catch(_){} host.style.cursor="grabbing"; });
+  host.addEventListener("pointermove",e=>{ const r=host.getBoundingClientRect(); mx=(e.clientX-r.left)/r.width-.5; my=(e.clientY-r.top)/r.height-.5;
+    if(drag){ const dx=e.clientX-drag.x, dy=e.clientY-drag.y; drag={x:e.clientX,y:e.clientY};
+      vy=dx*0.008; world.rotation.y+=vy; tilt=Math.max(-1.1,Math.min(1.1,tilt+dy*0.006)); } });
+  const endDrag=()=>{ if(drag){ drag=null; host.style.cursor="grab"; } };
+  host.addEventListener("pointerup",endDrag); host.addEventListener("pointercancel",endDrag);
+  host.addEventListener("pointerleave",()=>{ if(!drag){ mx=my=0; } });
   const tag=$("tag3d"), v3=new THREE.Vector3();
   const clock=new THREE.Clock();
   function frame(){
     const dt=Math.min(.05,clock.getDelta()), T=clock.elapsedTime, sp=RM?0:1;
-    world.rotation.y+=dt*.12*sp; world.rotation.x=lerp(world.rotation.x,my*.25,.05);
-    cam.position.x=lerp(cam.position.x,mx*2.2,.04); cam.lookAt(0,0,0);
+    if(!drag){ world.rotation.y+=vy; vy*=0.95; if(Math.abs(vy)<0.001) world.rotation.y+=dt*.12*sp; tilt*=0.995; }   // coast, then resume the slow spin
+    world.rotation.x=lerp(world.rotation.x, tilt+(drag?0:my*.25), .12);
+    cam.position.x=lerp(cam.position.x, drag?0:mx*2.2, .04); cam.lookAt(0,0,0);
     cage.rotation.y-=dt*.12*sp; cage.rotation.x+=dt*.05*sp;
     const beat=RM?.4:Math.pow(.5+.5*Math.sin(T*2.4),3); window.__beat=beat; U.uTime.value=RM?0:T; U.uPulse.value=beat; core.scale.setScalar(1+beat*.05); coreGlow.material.opacity=.3+.4*beat; coreGlow.scale.setScalar(5.2+beat*1.4);
     scene.updateMatrixWorld(); goo.worldToLocal(U.uCam.value.copy(cam.position));
@@ -641,6 +692,78 @@ function initThree(){
   };
 }
 
+
+/* ================= 2D ring core: flat HUD rings, one tilted orbit for depth ================= */
+const core2d = (function(){
+  const svg = $("c2"); if(!svg) return null;
+  const NS = "http://www.w3.org/2000/svg";
+  const el = (tag, at, par) => { const e = document.createElementNS(NS, tag); for(const k in at) e.setAttribute(k, at[k]); (par||svg).appendChild(e); return e; };
+  const defs = el("defs", {});
+  defs.innerHTML = `<radialGradient id="orbg" cx="42%" cy="38%" r="62%"><stop offset="0" style="stop-color:var(--cyan);stop-opacity:.22"/><stop offset=".7" style="stop-color:var(--cyan);stop-opacity:.12"/><stop offset="1" style="stop-color:var(--cyan);stop-opacity:.04"/></radialGradient>
+    <clipPath id="orbclip"><circle r="74"/></clipPath>
+    <filter id="goo"><feGaussianBlur in="SourceGraphic" stdDeviation="7" result="b"/><feColorMatrix in="b" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 20 -8"/></filter>
+    <filter id="soft" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>`;
+  const RX = 198, TILT0 = 0.30;
+  const back = el("g", {transform:"rotate(-9)"});
+  const orbitE = el("ellipse", {class:"orbit", rx:RX, ry:RX*Math.sin(TILT0)}, back);
+  const ticks = el("g", {class:"glow"});
+  for(let k=0;k<72;k++){ const a=k/72*2*Math.PI, r2=k%6?153:160; el("line",{class:"tick",x1:146*Math.cos(a),y1:146*Math.sin(a),x2:r2*Math.cos(a),y2:r2*Math.sin(a)},ticks); }
+  const ring2 = el("circle", {class:"ring2", r:172});
+  const orb = el("g", {});
+  el("circle", {r:78, fill:"url(#orbg)"}, orb);
+  const gooG = el("g", {"clip-path":"url(#orbclip)"}, orb); const gooF = el("g", {filter:"url(#goo)"}, gooG);
+  const blobs = [0,1,2,3,4].map(j => el("circle", {class:"blob", r: 14 + 4*(j%3)}, gooF));
+  el("circle", {class:"rim glow", r:78}, orb);
+  el("circle", {class:"trk", r:100});
+  const C2 = 2*Math.PI*100;
+  const arc = el("circle", {class:"arc glow", r:100, transform:"rotate(-90)", "stroke-dasharray":`0 ${C2}`});
+  const fa = D.threshold*2*Math.PI - Math.PI/2;
+  el("line", {class:"fl", x1:90*Math.cos(fa), y1:90*Math.sin(fa), x2:112*Math.cos(fa), y2:112*Math.sin(fa)});
+  el("text", {class:"fltx", x:124*Math.cos(fa), y:124*Math.sin(fa)+4, "text-anchor":"middle"}).textContent = D.threshold.toFixed(2);
+  const pulse = el("circle", {class:"pulse", r:80, opacity:0});
+  const front = el("g", {transform:"rotate(-9)"});
+  const nodes = NAMES.map((n,i)=>{ const g = el("g", {}, back); const c = el("circle", {r:8, class:"glow"}, g);
+    const t = el("text", {class:"lbl", y:4}, g); const nm = document.createElementNS(NS,"tspan"); nm.textContent = n; t.appendChild(nm);
+    const v = document.createElementNS(NS,"tspan"); v.setAttribute("class","val"); v.setAttribute("dx","8"); t.appendChild(v);
+    return {g, c, t, v, i, size:.5}; });
+  let phase = 0, vphase = 0, tilt = TILT0, drag = null, pulseT = 1, last = 0;
+  svg.addEventListener("pointerdown", e=>{ drag={x:e.clientX, y:e.clientY}; vphase=0; try{svg.setPointerCapture(e.pointerId);}catch(_){} svg.classList.add("dragging"); });
+  svg.addEventListener("pointermove", e=>{ if(!drag) return; const dx=e.clientX-drag.x, dy=e.clientY-drag.y; drag={x:e.clientX, y:e.clientY};
+    vphase = dx*0.011; phase += vphase; tilt = Math.max(0.06, Math.min(1.25, tilt + dy*0.006)); });
+  const end = ()=>{ drag=null; svg.classList.remove("dragging"); };
+  svg.addEventListener("pointerup", end); svg.addEventListener("pointercancel", end);
+  function frame(ts){
+    const dt = Math.min(.05, (ts-last)/1000 || 0); last = ts; const T = ts/1000, sp = RM?0:1;
+    if(!drag){ phase += vphase; vphase *= 0.95; if(Math.abs(vphase) < 0.001) phase += dt*0.16*sp; tilt += (TILT0 - tilt)*0.004; }
+    const ry = RX*Math.sin(tilt); orbitE.setAttribute("ry", ry.toFixed(1));
+    for(const n of nodes){
+      const a = phase + n.i*Math.PI/3, x = RX*Math.cos(a), y = ry*Math.sin(a), z = Math.sin(a), k = (z+1)/2;
+      n.g.setAttribute("transform", `translate(${x.toFixed(1)},${y.toFixed(1)})`);
+      n.c.setAttribute("r", ((5 + n.size*9)*(.65 + .55*k)).toFixed(1));
+      n.g.style.opacity = (.35 + .65*k).toFixed(2);
+      const want = z > 0 ? front : back; if(n.g.parentNode !== want) want.appendChild(n.g);
+      const right = x >= 0; n.t.setAttribute("x", right ? 16 : -16); n.t.setAttribute("text-anchor", right ? "start" : "end");
+      n.t.setAttribute("transform", "rotate(9)");
+    }
+    ticks.setAttribute("transform", `rotate(${(phase*17).toFixed(2)})`);
+    ring2.setAttribute("transform", `rotate(${(-phase*11).toFixed(2)})`);
+    const beat = RM ? .4 : Math.pow(.5+.5*Math.sin(T*2.4), 3); window.__beat = beat;
+    orb.setAttribute("transform", `scale(${(1+beat*.035).toFixed(4)})`);
+    blobs.forEach((b,j)=>{ b.setAttribute("cx", (34*Math.sin(T*sp*(.42+.11*j) + j*2.1)).toFixed(1)); b.setAttribute("cy", (30*Math.cos(T*sp*(.37+.09*j) + j*1.3)).toFixed(1)); });
+    if(pulseT < 1){ pulseT += dt*.9; pulse.setAttribute("r", (80 + pulseT*130).toFixed(1)); pulse.setAttribute("opacity", ((1-pulseT)*.6).toFixed(2)); }
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+  return {
+    focus(t){
+      const c = stateCol(t);
+      arc.setAttribute("stroke-dasharray", `${(t.prob*C2).toFixed(1)} ${C2.toFixed(1)}`); arc.style.stroke = c;
+      for(const n of nodes){ const v = t.scores[NAMES[n.i]], sc = v>0.55?C.lime:v<0.45?C.low:C.dim; n.size = v; n.c.setAttribute("fill", sc); n.v.textContent = v.toFixed(2); n.v.setAttribute("fill", sc); }
+    },
+    shock(){ pulseT = 0; }
+  };
+})();
+
 /* ================= consensus readout ================= */
 function setCore(t){
   const c=stateCol(t);
@@ -650,9 +773,9 @@ function setCore(t){
     return `<div class="rd"><span class="n">${n}</span><span class="t"><i style="width:${(v*100).toFixed(1)}%;background:linear-gradient(90deg,${mix(C.cell,cc,.4)},${cc});box-shadow:0 0 8px ${cc}"></i><b></b></span><span class="v" style="color:${cc}">${v.toFixed(2)}</span></div>`;}).join("");
   document.querySelectorAll(".q.scan,.mx .scan").forEach(e=>e.classList.remove("scan"));
   $("q-"+t.ticker)?.classList.add("scan"); document.querySelectorAll(`[data-t="${t.ticker}"]`).forEach(e=>e.classList.add("scan"));
-  three?.focus(t);
+  core2d?.focus(t);
 }
-function pulseAll(){ three?.shock(); }
+function pulseAll(){ core2d?.shock(); }
 
 /* ================= matrix ================= */
 function drawMatrix(){
@@ -777,8 +900,8 @@ if(!RM) document.querySelectorAll(".tilt").forEach(p=>{
 
 /* ================= boot ================= */
 let scanI=0, scanMs=4500, nextScan=Date.now()+scanMs;
-function scan(){ const t=TODAY[scanI%TODAY.length]; setCore(t); $("scanlbl").textContent=`scanning ${scanI%TODAY.length+1}/${TODAY.length}`; scanI++; }
-try{ if(SKIN==="reactor") initThree(); }catch(e){ console.warn("3D core unavailable",e); }
+function scan(){ if(pinned) return; const t=TODAY[scanI%TODAY.length]; setCore(t); $("scanlbl").textContent=`scanning ${scanI%TODAY.length+1}/${TODAY.length}`; scanI++; }
+
 drawDL(); drawMatrix(); drawTape(); drawFolds(-1,-1); drawGate(GATE.map(()=>"wait")); drawStages(STAGES.map(()=>({p:0,label:""})));
 scan(); tickHeader();
 log("console online · official run of "+D.asof+" loaded","hi"); $("eod").lastChild.textContent=" EOD · "+D.quotes[TK[0]].date;
@@ -790,6 +913,32 @@ setInterval(()=>{
   timerSVG("t2",1-(nextScan-now)/scanMs,C.cyan); $("t2v").textContent=((nextScan-now)/1000).toFixed(1)+"s";
 },250);
 setTimeout(replay,RM?0:700);
+
+/* ================= pin a stock from the data link ================= */
+function bigspark(arr){
+  const lo=Math.min(...arr), hi=Math.max(...arr), w=300, h=54, up=arr[arr.length-1]>=arr[0], col=up?C.lime:C.red;
+  const pts=arr.map((v,i)=>`${(i/(arr.length-1)*w).toFixed(1)},${(h-3-(v-lo)/((hi-lo)||1)*(h-6)).toFixed(1)}`).join(" ");
+  return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" aria-hidden="true"><polygon points="0,${h} ${pts} ${w},${h}" fill="${col}" fill-opacity=".12"/><polyline points="${pts}" fill="none" stroke="${col}" stroke-width="1.6" vector-effect="non-scaling-stroke"/></svg>`;
+}
+function showDetail(t){
+  const d=$("qd"); if(!t){ d.hidden=true; d.innerHTML=""; return; }
+  const q=D.quotes[t], r=byT[t], sp=q.spark, day=q.last/q.prev-1, m3=sp[sp.length-1]/sp[0]-1, vol=q.vol*Math.sqrt(252);
+  d.innerHTML=`<div class="qd-h"><b>${t}</b><span>${q.last.toFixed(2)}</span><span class="${day>=0?"up":"dn"}">${sgn(day)} on ${q.date}</span><button type="button" id="qdx" aria-label="Release ${t}">RELEASE</button></div>
+    <div class="qd-g"><span>Last 90 sessions <b class="${m3>=0?"up":"dn"}">${sgn(m3,1)}</b></span><span>Volatility <b>${(vol*100).toFixed(0)}%</b> a year</span>
+      <span>Model: up in ${D.horizon}d <b>${pct(r.prob,0)}</b></span><span>${r.agree}/6 agree · <b style="color:${r.fired?C.fire:C.mute}">${r.fired?"FIRE":"HOLD"}</b></span></div>
+    <div class="qd-s">${bigspark(sp)}<small><span>${sp.length} closes</span><span>${sp[0].toFixed(2)} → ${sp[sp.length-1].toFixed(2)}</span></small></div>`;
+  d.hidden=false; $("qdx").onclick=()=>pin(pinned);
+}
+function pin(t){
+  document.querySelectorAll(".q.pin").forEach(e=>e.classList.remove("pin"));
+  pinned=(t===pinned)?null:t;
+  if(pinned){ $("q-"+pinned).classList.add("pin"); setCore(byT[pinned]); showDetail(pinned);
+    $("scanlbl").textContent=`pinned · ${pinned} · click it again to release`; log(`pinned ${pinned} · P ${pct(byT[pinned].prob,0)} · ${byT[pinned].agree}/6 agree`,"hi"); }
+  else { showDetail(null); $("scanlbl").textContent="scanning"; nextScan=Date.now()+400; }
+}
+$("dl").addEventListener("click",e=>{ const c=e.target.closest(".q"); if(c) pin(c.id.slice(2)); });
+$("dl").addEventListener("keydown",e=>{ const c=e.target.closest(".q"); if(c && (e.key==="Enter"||e.key===" ")){ e.preventDefault(); pin(c.id.slice(2)); } });
+
 
 /* ================= v3 edge lab ================= */
 const V3 = D.v3 || {};
