@@ -1091,6 +1091,7 @@ const TIPS = {sharpe:"Annual return divided by annual volatility (cash rate take
   info_ratio:"Average return over SPY divided by how far it wanders from SPY", turnover:"Capital traded per year, buys plus sells", max_dd:"Worst fall from a previous high"};
 function renderProv(){ const p=D.prov||{}, repo=p.repo||"#";
   $("prov").innerHTML=`<span>Data: ${p.source||"daily closes"}</span><span>Updated ${p.built||"(local build)"}</span><span>Commit ${p.commit||"local"}</span>`+
+    (p.readme_asof?`<span>Re-runs each weekday after the close; the README's round 1 figures are frozen at the ${p.readme_asof} close</span>`:"")+
     `<span>Universe: ${p.survivorship||""}</span><a href="${repo}#readme">README</a><a href="${repo}/blob/main/PREREG.md">PREREG.md</a><a href="${repo}/blob/main/TRIALS.md">TRIALS.md</a>`; }
 function renderVerdicts(){ const g=D.gate, e=D.economics, pl=D.pilot, rec=e.eras["since 2015"], repo=(D.prov||{}).repo||"#";
   const card=(id,tag,title,body,cls)=>`<div class="card ${cls}"><span class="tag">${tag}</span><b>${title}</b><p>${body}</p><div class="links"><a href="#${id}">See the section</a><a href="${repo}#readme">README</a></div></div>`;

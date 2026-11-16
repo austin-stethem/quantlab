@@ -72,6 +72,7 @@ data["prov"] = {
     "built": datetime.now(ZoneInfo("America/Chicago")).strftime("%Y-%m-%d %H:%M ") + "Central",
     "commit": sha[:7] or "local",
     "repo": "https://github.com/austin-stethem/quantlab",
+    "readme_asof": (_load("round1/summary.json") or {}).get("asof", ""),
     "survivorship": f"{len(etfs)} index and sector funds plus {len(data['universe']) - len(etfs)} large caps picked today, "
                     "so the single stocks are known survivors and the backtest flatters them",
 }
