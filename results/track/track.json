@@ -1,0 +1,28 @@
+{
+ "start": "2026-11-16",
+ "asof": "2026-11-16",
+ "days_logged": 1,
+ "signals": 1,
+ "book_return": 0.0,
+ "spy_return": -0.019115265723043784,
+ "series": {
+  "dates": [
+   "2026-11-16"
+  ],
+  "book": [
+   1.0
+  ],
+  "spy": [
+   0.980885
+  ]
+ },
+ "recent_signals": [
+  {
+   "date": "2026-11-16",
+   "ticker": "DE",
+   "prob": 0.614,
+   "agree": 4,
+   "entry_close": 653.99
+  }
+ ]
+}
