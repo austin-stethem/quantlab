@@ -1,19 +1,22 @@
 {
  "start": "2026-11-16",
- "asof": "2026-11-16",
- "days_logged": 1,
- "signals": 1,
- "book_return": 0.0,
- "spy_return": -0.019115265723043784,
+ "asof": "2026-11-17",
+ "days_logged": 2,
+ "signals": 3,
+ "book_return": -0.0004139206896667247,
+ "spy_return": -0.029070605694457075,
  "series": {
   "dates": [
-   "2026-11-16"
+   "2026-11-16",
+   "2026-11-17"
   ],
   "book": [
-   1.0
+   1.0,
+   0.999586
   ],
   "spy": [
-   0.980885
+   0.980885,
+   0.970929
   ]
  },
  "recent_signals": [
@@ -23,6 +26,20 @@
    "prob": 0.614,
    "agree": 4,
    "entry_close": 653.99
+  },
+  {
+   "date": "2026-11-17",
+   "ticker": "UNH",
+   "prob": 0.621,
+   "agree": 4,
+   "entry_close": 389.68
+  },
+  {
+   "date": "2026-11-17",
+   "ticker": "DE",
+   "prob": 0.614,
+   "agree": 5,
+   "entry_close": 649.23
   }
  ]
 }
